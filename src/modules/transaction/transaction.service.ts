@@ -1,0 +1,140 @@
+import TransactionModel, {
+  TransactionCoin,
+  TransactionDocument,
+  TransactionStatus,
+  TransactionType,
+} from './transaction.model';
+
+//Type Declaration
+type newTransaction = {
+  user: string;
+  coin: TransactionCoin;
+  transactionType: TransactionType;
+  amount: number;
+  network?: string;
+  status?: string;
+  walletAddress: string;
+  transactionHash: string;
+};
+
+//New Transaction
+export const createNewTransaction = async (input: newTransaction) => {
+  const newTransaction = await TransactionModel.create(input);
+  return newTransaction;
+};
+
+//Fetch Transactions
+export const fetchTransactions = async (user: string, coin: string) => {
+  const transactions = await TransactionModel.find({ user, coin }).sort({
+    createdAt: -1,
+  });
+  return transactions;
+};
+
+//Fetch a Particular Transaction
+export const getTransactionById = async (id: string) => {
+  return await TransactionModel.findById(id);
+};
+
+//Get the balance
+
+export const getUserBalanceByCoin = async (userId: string) => {
+  const transactions = await TransactionModel.find({
+    user: userId,
+    status: TransactionStatus.SUCCESSFUL,
+  });
+
+  // Initialize all coins with 0 balance
+  const balanceByCoin: Record<TransactionCoin, number> = Object.values(
+    TransactionCoin
+  ).reduce(
+    (acc, coin) => {
+      acc[coin] = 0;
+      return acc;
+    },
+    {} as Record<TransactionCoin, number>
+  );
+
+  // Calculate balance based on transactions
+  for (const tx of transactions) {
+    const coin = tx.coin;
+
+    if (tx.transactionType === TransactionType.RECEIVED) {
+      balanceByCoin[coin] += tx.amount;
+    } else if (tx.transactionType === TransactionType.SENT) {
+      balanceByCoin[coin] -= tx.amount;
+    }
+  }
+
+  return balanceByCoin;
+};
+
+//Admin Services
+
+//Fetch all transactions with pagination
+export const getTransactions = async (page = 1, limit = 10) => {
+  const skip = (page - 1) * limit;
+
+  const [transactions, total] = await Promise.all([
+    TransactionModel.find()
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 })
+      .populate('user', 'userName email accountId profilePicture'),
+    TransactionModel.countDocuments(),
+  ]);
+
+  return {
+    data: transactions,
+    pagination: {
+      total,
+      page,
+      pages: Math.ceil(total / limit),
+    },
+  };
+};
+
+//Fetch a specific user transactions
+export const getUserTransactions = async (
+  user: string,
+  page = 1,
+  limit = 20,
+  transactionType?: TransactionType
+) => {
+  const skip = (page - 1) * limit;
+
+  const filter: any = { user };
+  if (transactionType) {
+    filter.transactionType = transactionType;
+  }
+
+  const [transactions, total] = await Promise.all([
+    TransactionModel.find(filter)
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 }),
+    TransactionModel.countDocuments(filter),
+  ]);
+
+  return {
+    data: transactions,
+    pagination: {
+      total,
+      page,
+      pages: Math.ceil(total / limit),
+    },
+  };
+};
+
+//Update a transaction
+export const updateTransaction = async (
+  id: string,
+  data: Partial<TransactionDocument>
+) => {
+  return await TransactionModel.findByIdAndUpdate(id, data, { new: true });
+};
+
+//Delete a transaction
+export const deleteTransaction = async (id: string) => {
+  return await TransactionModel.findByIdAndDelete(id);
+};
