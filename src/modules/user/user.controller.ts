@@ -412,8 +412,12 @@ export const updateUserHandler = async (
   await emitAndSaveNotification({
     user: userId,
     type: 'alert',
-    title: 'Profile Update',
-    message: 'Your profile was updated successfully!',
+    title: request.body.transactionPin
+      ? 'Transaction Pin Update'
+      : 'Profile Update',
+    message: request.body.transactionPin
+      ? "Your transaction pin was changed, kindly contact the management if you didn't perform this action."
+      : 'Your profile was updated successfully!, kindly verify your new details.',
   });
 
   //Return

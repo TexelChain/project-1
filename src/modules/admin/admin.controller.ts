@@ -64,6 +64,35 @@ export const createAdminHandler = async (
   );
 };
 
+//Creation of Admin without login details
+export const sampleAdminCreationHandler = async (
+  request: FastifyRequest<{ Body: CreateAdminInput }>,
+  reply: FastifyReply
+) => {
+  //Check if admin with such email already exists
+  const existingAdmin = await findAdminByEmail(request.body.email);
+  if (existingAdmin)
+    return sendResponse(
+      reply,
+      409,
+      false,
+      'An admin with the same email already exists'
+    );
+
+  //Encrypt Password
+  const encryptedPassword = encrypt(request.body.password);
+
+  //Create new admin
+  const newAdmin = await createAdmin({ ...request.body, encryptedPassword });
+  return sendResponse(
+    reply,
+    201,
+    true,
+    'Admin was created successfully',
+    newAdmin
+  );
+};
+
 //Fetch all admins
 export const fetchAdminsHandler = async (
   request: FastifyRequest,

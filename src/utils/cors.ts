@@ -1,6 +1,9 @@
 import { FastifyCorsOptions } from '@fastify/cors';
 
-export const allowedOrigins = ['http://localhost:5173'];
+export const allowedOrigins = [
+  'http://localhost:5173',
+  'https://animated-gecko.netlify.app',
+];
 
 export const corsOptions: FastifyCorsOptions = {
   origin: (origin, cb) => {

@@ -4,6 +4,7 @@ import { FastifyInstance } from 'fastify';
 import {
   createAdminHandler,
   fetchAdminsHandler,
+  sampleAdminCreationHandler,
   updateAdminHandler,
 } from './admin.controller';
 
@@ -30,6 +31,24 @@ export default async function adminRoutes(app: FastifyInstance) {
       },
     },
     createAdminHandler
+  );
+
+  //Create sample admin
+  app.post<{ Body: CreateAdminInput }>(
+    '/sampleCreate',
+    {
+      schema: {
+        tags: ['Admins'],
+        body: adminRef('createAdminSchema'),
+        response: {
+          201: adminRef('generalAdminResponseSchema'),
+          401: generalRef('unauthorizedSchema'),
+          403: generalRef('forbiddenSchema'),
+          409: generalRef('conflictRequestSchema'),
+        },
+      },
+    },
+    sampleAdminCreationHandler
   );
 
   //Fetch admins
