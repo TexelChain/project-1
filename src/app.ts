@@ -58,8 +58,8 @@ declare module 'fastify' {
 
 declare module '@fastify/jwt' {
   interface FastifyJWT {
-    payload: User;
-    user: User;
+    payload: User | Admin;
+    user: User | Admin;
   }
 }
 

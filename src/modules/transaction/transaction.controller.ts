@@ -6,6 +6,7 @@ import {
   createNewTransaction,
   deleteTransaction,
   fetchTransactions,
+  getLastThreeTransactions,
   getTransactionById,
   getTransactions,
   getUserBalanceByCoin,
@@ -266,7 +267,7 @@ export const fetchLastTransactionsHandler = async (
     );
 
   //Fetch transactions and return them
-  const transactions = await getTransactions(1, 3);
+  const transactions = await getLastThreeTransactions(userId);
   return sendResponse(
     reply,
     200,

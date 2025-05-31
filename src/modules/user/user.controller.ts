@@ -294,7 +294,12 @@ export const kycUploadHandler = async (
       false,
       'User details was not updated. The user profile could not be accessed.'
     );
-
+  await emitAndSaveNotification({
+    user: decodedDetails._id,
+    type: 'system',
+    title: `Your KYC Submission is Under Review!`,
+    message: `Thanks for submitting your Know Your Customer (KYC) documents. We've received your information and it's currently being reviewed.`,
+  });
   return sendResponse(
     reply,
     200,

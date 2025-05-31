@@ -22,7 +22,7 @@ export default async function (app: FastifyInstance) {
     {
       preHandler: app.authenticateAdmin,
       schema: {
-        tags: ['Admin'],
+        tags: ['Admins'],
         security: [{ bearerAuth: [] }],
         response: {
           201: utilityRef('generalUtilityResponseSchema'),
@@ -39,7 +39,7 @@ export default async function (app: FastifyInstance) {
     '/get',
     {
       schema: {
-        tags: ['Admin', 'Users'],
+        tags: ['Admins', 'Users'],
         security: [{ bearerAuth: [] }],
         response: {
           200: utilityRef('generalUtilityResponseSchema'),
@@ -55,7 +55,7 @@ export default async function (app: FastifyInstance) {
     {
       preHandler: app.authenticateAdmin,
       schema: {
-        tags: ['Admin'],
+        tags: ['Admins'],
         security: [{ bearerAuth: [] }],
         params: utilityRef('readUtilitySchema'),
         body: utilityRef('editUtilitySchema'),

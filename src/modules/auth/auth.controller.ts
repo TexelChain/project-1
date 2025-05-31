@@ -4,6 +4,7 @@ import { app } from '../../app';
 
 //Services
 import { findUserByEmail } from '../user/user.service';
+import { findAdminByEmail } from '../admin/admin.service';
 
 //Schemas, templates
 import {
@@ -241,4 +242,29 @@ export const changePasswordHandler = async (
     true,
     'Your password was updated successfully.'
   );
+};
+
+// Administrative Endpoint
+// Authenticate Admin
+export const adminLoginHandler = async (
+  request: FastifyRequest<{ Body: LoginUserInput }>,
+  reply: FastifyReply
+) => {
+  const { email, password } = request.body;
+
+  //Fetch user by email
+  const admin = await findAdminByEmail(email);
+  if (!admin)
+    return sendResponse(reply, 400, false, 'Incorrect Email or Password');
+
+  //Compare password
+  const isCorrect = await admin.comparePassword(password);
+  if (isCorrect) {
+    const plainAdmin = admin.toObject() as Admin;
+    return sendResponse(reply, 200, true, 'Authenticated successfully', {
+      accessToken: app.jwt.sign(plainAdmin),
+    });
+  }
+
+  return sendResponse(reply, 400, false, 'Incorrect Email or Password');
 };

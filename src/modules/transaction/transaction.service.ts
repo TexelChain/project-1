@@ -36,8 +36,7 @@ export const getTransactionById = async (id: string) => {
   return await TransactionModel.findById(id);
 };
 
-//Get the balance
-
+//Get the balance of each coin
 export const getUserBalanceByCoin = async (userId: string) => {
   const transactions = await TransactionModel.find({
     user: userId,
@@ -69,8 +68,15 @@ export const getUserBalanceByCoin = async (userId: string) => {
   return balanceByCoin;
 };
 
-//Admin Services
+//Get a users last three transactions
+export const getLastThreeTransactions = async (user: string) => {
+  const transactions = await TransactionModel.find({ user })
+    .sort({ createdAt: -1 })
+    .limit(3);
+  return transactions;
+};
 
+//Admin Services
 //Fetch all transactions with pagination
 export const getTransactions = async (page = 1, limit = 10) => {
   const skip = (page - 1) * limit;
