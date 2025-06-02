@@ -24,7 +24,7 @@ export const createAdminHandler = async (
   const decodedAdmin = request.admin!;
 
   //Fetch admin and make sure he is a super admin
-  const admin = await findAdminById(decodedAdmin?._id);
+  const admin = await findAdminById(decodedAdmin._id);
   if (!admin)
     return sendResponse(
       reply,
@@ -93,6 +93,32 @@ export const sampleAdminCreationHandler = async (
   );
 };
 
+//Fetch current admin
+export const getAdminHandler = async (
+  request: FastifyRequest,
+  reply: FastifyReply
+) => {
+  const decodedAdmin = request.admin!;
+
+  //Fetch admin
+  const admin = await findAdminById(decodedAdmin._id);
+  if (!admin)
+    return sendResponse(
+      reply,
+      401,
+      false,
+      'Sorry, but you are not authorized to perform this action'
+    );
+
+  return sendResponse(
+    reply,
+    200,
+    true,
+    'Your details was fetched successfully',
+    admin
+  );
+};
+
 //Fetch all admins
 export const fetchAdminsHandler = async (
   request: FastifyRequest,
@@ -100,7 +126,7 @@ export const fetchAdminsHandler = async (
 ) => {
   const decodedAdmin = request.admin!;
   //Fetch admin and make sure he is a super admin
-  const admin = await findAdminById(decodedAdmin?._id);
+  const admin = await findAdminById(decodedAdmin._id);
   if (!admin)
     return sendResponse(
       reply,
@@ -135,7 +161,7 @@ export const updateAdminHandler = async (
   const { adminId } = request.body;
 
   //Fetch admin and make sure he is a super admin
-  const admin = await findAdminById(decodedAdmin?._id);
+  const admin = await findAdminById(decodedAdmin._id);
   if (!admin)
     return sendResponse(
       reply,

@@ -4,6 +4,7 @@ import { FastifyInstance } from 'fastify';
 import {
   createAdminHandler,
   fetchAdminsHandler,
+  getAdminHandler,
   sampleAdminCreationHandler,
   updateAdminHandler,
 } from './admin.controller';
@@ -49,6 +50,23 @@ export default async function adminRoutes(app: FastifyInstance) {
       },
     },
     sampleAdminCreationHandler
+  );
+
+  //Get logged in admin details
+  app.get(
+    '/getDetails',
+    {
+      preHandler: app.authenticateAdmin,
+      schema: {
+        tags: ['Admins'],
+        security: [{ bearerAuth: [] }],
+        response: {
+          200: adminRef('generalAdminResponseSchema'),
+          401: generalRef('unauthorizedSchema'),
+        },
+      },
+    },
+    getAdminHandler
   );
 
   //Fetch admins
