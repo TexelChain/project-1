@@ -449,6 +449,7 @@ export const fetchAllTransactionsHandler = async (
   reply: FastifyReply
 ) => {
   const type = request.params.transactionType;
+  console.log('The type', type);
   const { page = '1', limit = '20' } = request.query;
 
   //Fetch transactions and return them

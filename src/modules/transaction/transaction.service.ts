@@ -84,11 +84,13 @@ export const getTransactions = async (
   limit = 20
 ) => {
   const skip = (page - 1) * limit;
-
+  console.log('Transaction Type', transactionType);
   const filter: any = {};
   if (transactionType) {
     filter.transactionType = transactionType;
   }
+
+  console.log('The filer', filter);
 
   const [transactions, total] = await Promise.all([
     TransactionModel.find(filter)

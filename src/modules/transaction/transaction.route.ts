@@ -177,6 +177,7 @@ export default async function transactionRoutes(app: FastifyInstance) {
       schema: {
         tags: ['Transactions', 'Admins'],
         security: [{ bearerAuth: [] }],
+        params: transactionRef('getTransactionsWithTypeSchema'),
         querystring: generalRef('paginationSchema'),
       },
     },
