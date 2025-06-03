@@ -171,7 +171,7 @@ export default async function transactionRoutes(app: FastifyInstance) {
     Params: GetTransactionsWithTypeInput;
     Querystring: PaginationInput;
   }>(
-    '/getAllTransactions/:type',
+    '/getAllTransactions/:transactionType',
     {
       preHandler: app.authenticateAdmin,
       schema: {
