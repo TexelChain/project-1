@@ -24,6 +24,7 @@ import {
   FetchTransactionsInput,
   FetchUserTransactionsInput,
   GetCoinDetailsInput,
+  GetTransactionsWithTypeInput,
   GetUserTransactionInput,
   UpdateTransactionInput,
 } from './transaction.schema';
@@ -441,13 +442,21 @@ export const createUserTransactionHandler = async (
 
 //Fetch all transaction
 export const fetchAllTransactionsHandler = async (
-  request: FastifyRequest<{ Querystring: PaginationInput }>,
+  request: FastifyRequest<{
+    Params: GetTransactionsWithTypeInput;
+    Querystring: PaginationInput;
+  }>,
   reply: FastifyReply
 ) => {
+  const type = request.params.transactionType;
   const { page = '1', limit = '20' } = request.query;
 
   //Fetch transactions and return them
-  const transactions = await getTransactions(parseInt(page), parseInt(limit));
+  const transactions = await getTransactions(
+    type,
+    parseInt(page),
+    parseInt(limit)
+  );
   return sendResponse(
     reply,
     200,

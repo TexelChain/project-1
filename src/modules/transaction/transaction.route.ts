@@ -25,6 +25,7 @@ import {
   FetchTransactionsInput,
   FetchUserTransactionsInput,
   GetCoinDetailsInput,
+  GetTransactionsWithTypeInput,
   GetUserTransactionInput,
   transactionRef,
   UpdateTransactionInput,
@@ -166,8 +167,11 @@ export default async function transactionRoutes(app: FastifyInstance) {
   );
 
   //Fetch all transactions
-  app.get<{ Querystring: PaginationInput }>(
-    '/getAllTransactions',
+  app.get<{
+    Params: GetTransactionsWithTypeInput;
+    Querystring: PaginationInput;
+  }>(
+    '/getAllTransactions/:type',
     {
       preHandler: app.authenticateAdmin,
       schema: {

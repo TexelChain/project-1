@@ -78,16 +78,25 @@ export const getLastThreeTransactions = async (user: string) => {
 
 //Admin Services
 //Fetch all transactions with pagination
-export const getTransactions = async (page = 1, limit = 10) => {
+export const getTransactions = async (
+  transactionType?: TransactionType,
+  page = 1,
+  limit = 20
+) => {
   const skip = (page - 1) * limit;
 
+  const filter: any = {};
+  if (transactionType) {
+    filter.transactionType = transactionType;
+  }
+
   const [transactions, total] = await Promise.all([
-    TransactionModel.find()
+    TransactionModel.find(filter)
       .skip(skip)
       .limit(limit)
       .sort({ createdAt: -1 })
       .populate('user', 'userName email accountId profilePicture'),
-    TransactionModel.countDocuments(),
+    TransactionModel.countDocuments(filter),
   ]);
 
   return {

@@ -98,6 +98,10 @@ const updateTransactionSchema = z.object({
   }),
 });
 
+const getTransactionsWithTypeSchema = z.object({
+  transactionType: z.nativeEnum(TransactionType).optional(),
+});
+
 const getUserTransactionsSchema = z.object({
   userId: z.string({
     required_error: 'UserId is required',
@@ -118,6 +122,9 @@ export type FetchUserTransactionsInput = z.infer<
 
 //Administrative
 export type UpdateTransactionInput = z.infer<typeof updateTransactionSchema>;
+export type GetTransactionsWithTypeInput = z.infer<
+  typeof getTransactionsWithTypeSchema
+>;
 export type GetUserTransactionInput = z.infer<typeof getUserTransactionsSchema>;
 
 export const { schemas: transactionSchemas, $ref: transactionRef } =
@@ -134,6 +141,7 @@ export const { schemas: transactionSchemas, $ref: transactionRef } =
       getTransactionResponseSchema,
       getBalanceResponseSchema,
       updateTransactionSchema,
+      getTransactionsWithTypeSchema,
       getUserTransactionsSchema,
     },
     { $id: 'TransactionSchema' }
