@@ -57,7 +57,6 @@ export default async function transactionRoutes(app: FastifyInstance) {
   app.get(
     '/fetchPrices',
     {
-      preHandler: app.authenticate,
       schema: {
         tags: ['Transactions', 'Users'],
         security: [{ bearerAuth: [] }],
