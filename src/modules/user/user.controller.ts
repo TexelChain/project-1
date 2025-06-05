@@ -72,7 +72,7 @@ export const createUserHandler = async (
     );
 
   const existingUserName = await findUser({
-    userName: request.body.userName.toLowerCase(),
+    userName: request.body.userName,
   });
   if (existingUserName)
     return sendResponse(

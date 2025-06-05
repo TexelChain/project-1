@@ -60,7 +60,7 @@ const userSchema = new Schema<UserDocument>(
   {
     email: { type: String, required: true, unique: true, lowercase: true },
     password: { type: String, required: true },
-    userName: { type: String, required: true, unique: true, lowercase: true },
+    userName: { type: String, required: true, unique: true },
     accountId: { type: String, unique: true },
     phoneNumber: { type: String, required: true },
     country: { type: String, required: true },
