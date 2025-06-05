@@ -543,6 +543,7 @@ export const fetchUserHandler = async (
   reply: FastifyReply
 ) => {
   const value = request.params.value;
+  console.log('The value', value);
   const decodedAdmin = request.admin!;
 
   //Fetch admin and make sure he is a super admin
