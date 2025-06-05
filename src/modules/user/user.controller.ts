@@ -71,7 +71,9 @@ export const createUserHandler = async (
       'An account with this email address already exists. Please log in or use a different email address to create a new account.'
     );
 
-  const existingUserName = await findUser({ userName: request.body.userName });
+  const existingUserName = await findUser({
+    userName: request.body.userName.toLowerCase(),
+  });
   if (existingUserName)
     return sendResponse(
       reply,
