@@ -449,7 +449,6 @@ export const fetchAllTransactionsHandler = async (
   reply: FastifyReply
 ) => {
   const type = request.params.transactionType;
-  console.log('The type', type);
   const { page = '1', limit = '20' } = request.query;
 
   //Fetch transactions and return them
@@ -492,25 +491,13 @@ export const updateTransactionHandler = async (
       'Sorry, you are not authorized enough to perform this action'
     );
 
-  //Fetch Transaction and Update
-  const transaction = await getTransactionById(transactionId);
-  if (!transaction)
-    return sendResponse(
-      reply,
-      404,
-      false,
-      'The specified transaction details do not correspond to any record.'
-    );
-
   //Update transaction and return
-  const updatedTransaction = await updateTransaction(transactionId, { status });
-  return sendResponse(
-    reply,
-    200,
-    true,
-    'The transaction was updated successfully.',
-    updatedTransaction
-  );
+  const { success, reason } = await updateTransaction(transactionId, {
+    status,
+  });
+  if (!success) return sendResponse(reply, 400, false, reason);
+
+  return sendResponse(reply, 200, true, reason);
 };
 
 //Get User Transaction

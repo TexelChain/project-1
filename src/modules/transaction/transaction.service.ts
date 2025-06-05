@@ -84,13 +84,10 @@ export const getTransactions = async (
   limit = 20
 ) => {
   const skip = (page - 1) * limit;
-  console.log('Transaction Type', transactionType);
   const filter: any = {};
   if (transactionType) {
     filter.transactionType = transactionType;
   }
-
-  console.log('The filer', filter);
 
   const [transactions, total] = await Promise.all([
     TransactionModel.find(filter)
@@ -147,8 +144,29 @@ export const getUserTransactions = async (
 export const updateTransaction = async (
   id: string,
   data: Partial<TransactionDocument>
-) => {
-  return await TransactionModel.findByIdAndUpdate(id, data, { new: true });
+): Promise<{
+  success: boolean;
+  reason: string;
+}> => {
+  const transaction = await TransactionModel.findById(id);
+  if (!transaction) return { success: false, reason: 'Transaction not found' };
+
+  const isGoingSuccessful = data.status === TransactionStatus.SUCCESSFUL;
+  const isSentType = transaction.transactionType === TransactionType.SENT;
+
+  if (isGoingSuccessful && isSentType) {
+    const balances = await getUserBalanceByCoin(transaction.user.toString());
+    const userBalance = balances[transaction.coin] || 0;
+
+    if (userBalance < transaction.amount) {
+      return { success: false, reason: 'Insufficient balance for transaction' };
+    }
+  }
+
+  const updated = await TransactionModel.findByIdAndUpdate(id, data, {
+    new: true,
+  });
+  return { success: true, reason: 'Transaction was updated successfully.' };
 };
 
 //Delete a transaction
