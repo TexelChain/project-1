@@ -42,7 +42,7 @@ export const fetchUsers = async (page = 1, limit = 20) => {
   const skip = (page - 1) * limit;
 
   const [users, total] = await Promise.all([
-    UserModel.find().skip(skip).limit(limit).sort({ createdAt: -1 }),
+    UserModel.find().skip(skip).limit(limit).sort({ createdAt: -1 }).lean(),
     UserModel.countDocuments(),
   ]);
 
