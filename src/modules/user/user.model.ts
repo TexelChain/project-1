@@ -148,6 +148,17 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
+//Adding Suspended Date
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('isSuspended')) {
+    return next();
+  }
+
+  const suspendedDate = new Date();
+  this.suspendedDate = suspendedDate;
+  next();
+});
+
 // Methods
 // Comparing passwords
 userSchema.methods.comparePassword = async function (
