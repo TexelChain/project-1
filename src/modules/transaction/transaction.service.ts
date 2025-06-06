@@ -159,7 +159,10 @@ export const updateTransaction = async (
     const userBalance = balances[transaction.coin] || 0;
 
     if (userBalance < transaction.amount) {
-      return { success: false, reason: 'Insufficient balance for transaction' };
+      return {
+        success: false,
+        reason: 'User has Insufficient balance for transaction',
+      };
     }
   }
 

@@ -4,6 +4,7 @@ import { FastifyInstance } from 'fastify';
 import {
   createUserHandler,
   editUserHandler,
+  fetchAllUsersHandler,
   fetchCurrentUserHandler,
   fetchUserHandler,
   kycUploadHandler,
@@ -20,7 +21,7 @@ import {
   userRef,
   VerifyUserInput,
 } from './user.schema';
-import { generalRef } from '../general/general.schema';
+import { generalRef, PaginationInput } from '../general/general.schema';
 import { transactionRef } from '../transaction/transaction.schema';
 import { getBalanceHandler } from '../transaction/transaction.controller';
 
@@ -210,5 +211,19 @@ export default async function userRoutes(app: FastifyInstance) {
       },
     },
     fetchUserHandler
+  );
+
+  //Fetch all users
+  app.get<{ Querystring: PaginationInput }>(
+    '/allUsers',
+    {
+      preHandler: app.authenticateAdmin,
+      schema: {
+        tags: ['Users', 'Admins'],
+        security: [{ bearerAuth: [] }],
+        querystring: generalRef('paginationSchema'),
+      },
+    },
+    fetchAllUsersHandler
   );
 }
