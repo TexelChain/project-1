@@ -77,10 +77,19 @@ export const fetchUser = async (value: string) => {
 export const updateUser = async (input: EditUserInput) => {
   const { email, password, ...rest } = input;
 
-  // Prepare update object
-  const updateFields: Partial<typeof input> = { ...rest };
+  // Flatten nested updates for safe partial $set operations
+  const updateFields: Record<string, any> = {};
 
-  // If password is provided, encryptedPassword
+  for (const [key, value] of Object.entries(rest)) {
+    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+      for (const [subKey, subValue] of Object.entries(value)) {
+        updateFields[`${key}.${subKey}`] = subValue;
+      }
+    } else {
+      updateFields[key] = value;
+    }
+  }
+
   if (password) {
     const hashedPassword = encrypt(password);
     updateFields.encryptedPassword = hashedPassword;

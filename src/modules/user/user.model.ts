@@ -71,14 +71,17 @@ const userSchema = new Schema<UserDocument>(
       validate: [arrayLimit, 'Passphrase must contain exactly 12 words'],
     },
     kyc: {
-      images: { type: [String] },
-      idType: { type: String },
-      status: {
-        type: String,
-        enum: ['pending', 'accepted', 'rejected'],
-        default: 'pending',
-      },
-      lastSubmissionDate: { type: Date },
+      type: new Schema({
+        images: { type: [String], default: [] },
+        idType: { type: String },
+        status: {
+          type: String,
+          enum: ['pending', 'accepted', 'rejected'],
+          default: 'pending',
+        },
+        lastSubmissionDate: { type: Date },
+      }),
+      default: () => ({}),
     },
     profilePicture: { type: String },
     gender: { type: String },
