@@ -217,7 +217,6 @@ export default async function transactionRoutes(app: FastifyInstance) {
         body: transactionRef('getUserTransactionsSchema'),
         querystring: generalRef('paginationSchema'),
         response: {
-          200: transactionRef('getTransactionsResponseSchema'),
           400: generalRef('badRequestSchema'),
         },
       },
