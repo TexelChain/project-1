@@ -183,6 +183,7 @@ export default async function userRoutes(app: FastifyInstance) {
       schema: {
         tags: ['Admins'],
         security: [{ bearerAuth: [] }],
+        body: userRef('editUserSchema'),
         response: {
           200: userRef('generalUserResponseSchema'),
           400: generalRef('badRequestSchema'),
