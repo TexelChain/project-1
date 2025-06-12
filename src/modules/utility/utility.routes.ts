@@ -35,12 +35,11 @@ export default async function (app: FastifyInstance) {
   );
 
   //Get Utility
-  app.get(
-    '/get',
+  app.get<{ Params: ReadUtilityInput }>(
+    '/get/:id',
     {
       schema: {
         tags: ['Admins', 'Users'],
-        security: [{ bearerAuth: [] }],
         response: {
           200: utilityRef('generalUtilityResponseSchema'),
         },
