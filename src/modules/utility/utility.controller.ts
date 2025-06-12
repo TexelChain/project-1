@@ -81,6 +81,7 @@ export const getUtilityHandler = async (
   reply: FastifyReply
 ) => {
   const id = request.params.id;
+  console.log('The Id', id);
 
   const utility = await getUtility(id);
   if (!utility) {
