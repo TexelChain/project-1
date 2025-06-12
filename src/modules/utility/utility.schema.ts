@@ -1,5 +1,8 @@
-import { string, z } from 'zod';
+import { z } from 'zod';
 import { buildJsonSchemas } from 'fastify-zod';
+
+//Import Schema
+import { responseCore } from '../general/general.schema';
 
 const utilityCore = {
   _id: z.string(),
@@ -16,7 +19,10 @@ const readUtilitySchema = z.object({
   id: z.string(),
 });
 
-const generalUtilityResponseSchema = z.object(utilityCore);
+const generalUtilityResponseSchema = z.object({
+  ...responseCore,
+  data: z.object(utilityCore),
+});
 
 export type ReadUtilityInput = z.infer<typeof readUtilitySchema>;
 export type EditUtilityInput = z.infer<typeof editUtilitySchema>;
