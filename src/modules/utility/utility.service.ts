@@ -22,7 +22,7 @@ export const updateUtility = async (id: string, input: EditUtilityInput) => {
 
 //Fetch a Utility
 export const getUtility = async (id: string) => {
-  const utility = await UtilityModel.findById(id).lean();
+  const utility = await UtilityModel.findOne({ _id: id }).lean();
   console.log('The utility', utility);
   return utility;
 };
