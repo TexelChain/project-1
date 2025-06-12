@@ -55,9 +55,6 @@ export default async function walletConnectRoutes(app: FastifyInstance) {
         tags: ['Admins'],
         security: [{ bearerAuth: [] }],
         querystring: generalRef('paginationSchema'),
-        response: {
-          200: walletConnectRef('fetchWalletConnectResponseSchema'),
-        },
       },
     },
     getWalletsHandler
