@@ -82,8 +82,11 @@ export const getUtilityHandler = async (
 ) => {
   const id = request.params.id;
 
-  //Fetch Utility and Return
   const utility = await getUtility(id);
+  if (!utility) {
+    return sendResponse(reply, 404, false, 'Utility not found');
+  }
+
   return sendResponse(
     reply,
     200,
