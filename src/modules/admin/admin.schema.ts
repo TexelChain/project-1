@@ -59,6 +59,7 @@ const fetchAdminsResponseSchema = z.object({
     z.object({
       ...adminCore,
       _id: z.string(),
+      adminId: z.string(),
       isSuspended: z.boolean(),
       role: z.nativeEnum(AdminRole).optional(),
       lastSession: z.string().date().optional(),
