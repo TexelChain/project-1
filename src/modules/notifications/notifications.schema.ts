@@ -20,6 +20,13 @@ export const createNotificationSchema = z.object({
   message: z.string(),
 });
 
+export const createAdminNotificationSchema = z.object({
+  user: z.string(),
+  type: z.enum(['transaction', 'system', 'alert']),
+  title: z.string(),
+  message: z.string(),
+});
+
 export const readNotificationSchema = z.object({
   notificationId: z.string({
     required_error: 'Notification Id is required',
@@ -33,12 +40,16 @@ export const generalNotificationResponseSchema = z.object({
 
 export type CreateNotificationInput = z.infer<typeof createNotificationSchema>;
 export type ReadNotificationInput = z.infer<typeof readNotificationSchema>;
+export type CreateAdminNotificationInput = z.infer<
+  typeof createAdminNotificationSchema
+>;
 
 export const { schemas: notificationSchemas, $ref: notificationRef } =
   buildJsonSchemas(
     {
       createNotificationSchema,
       readNotificationSchema,
+      createAdminNotificationSchema,
       generalNotificationResponseSchema,
     },
     { $id: 'NotificationSchema' }

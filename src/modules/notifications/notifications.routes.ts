@@ -5,10 +5,15 @@ import {
   deleteNotificationHandler,
   getNotificationsHandler,
   markNotificationReadHandler,
+  sendNotificationHandler,
 } from './notifications.controller';
 
 //Schemas
-import { notificationRef, ReadNotificationInput } from './notifications.schema';
+import {
+  CreateAdminNotificationInput,
+  notificationRef,
+  ReadNotificationInput,
+} from './notifications.schema';
 import { generalRef } from '../general/general.schema';
 
 export default async function notificationRoutes(app: FastifyInstance) {
@@ -59,5 +64,24 @@ export default async function notificationRoutes(app: FastifyInstance) {
       },
     },
     deleteNotificationHandler
+  );
+
+  // Admin Route
+  app.post<{ Body: CreateAdminNotificationInput }>(
+    '/create',
+    {
+      preHandler: app.authenticateAdmin,
+      schema: {
+        tags: ['Notifications', 'Admin'],
+        security: [{ bearerAuth: [] }],
+        body: notificationRef('createAdminNotificationSchema'),
+        response: {
+          200: notificationRef('generalNotificationResponseSchema'),
+          401: generalRef('unauthorizedSchema'),
+          403: generalRef('forbiddenSchema'),
+        },
+      },
+    },
+    sendNotificationHandler
   );
 }

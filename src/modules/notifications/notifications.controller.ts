@@ -9,10 +9,15 @@ import {
 } from './notifications.services';
 
 //Schemas
-import { ReadNotificationInput } from './notifications.schema';
+import {
+  CreateAdminNotificationInput,
+  ReadNotificationInput,
+} from './notifications.schema';
 
 //Utils
 import { sendResponse } from '../../utils/response.utils';
+import { findAdminById } from '../admin/admin.service';
+import { emitAndSaveNotification } from '../../utils/socket';
 
 //Get a user notifications
 export const getNotificationsHandler = async (
@@ -93,5 +98,41 @@ export const deleteNotificationHandler = async (
     200,
     true,
     'Notification was deleted successfully'
+  );
+};
+
+//Admin Endpoint
+
+//Send Notification to any user
+export const sendNotificationHandler = async (
+  request: FastifyRequest<{ Body: CreateAdminNotificationInput }>,
+  reply: FastifyReply
+) => {
+  const decodedAdmin = request.admin!;
+
+  //Fetch admin and make sure he is a super admin
+  const admin = await findAdminById(decodedAdmin._id);
+  if (!admin)
+    return sendResponse(
+      reply,
+      401,
+      false,
+      'Sorry, but you are not authorized to perform this action'
+    );
+  if (admin.role !== 'super_admin')
+    return sendResponse(
+      reply,
+      403,
+      false,
+      'Sorry, you are not authorized enough to perform this action'
+    );
+
+  const newNotification = await emitAndSaveNotification(request.body);
+  return sendResponse(
+    reply,
+    200,
+    true,
+    'Notification was sent successfully',
+    newNotification
   );
 };
