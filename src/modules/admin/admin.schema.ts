@@ -39,6 +39,7 @@ const updateAdminSchema = z.object({
   password: z.string().optional(),
   role: z.nativeEnum(AdminRole).optional(),
   encryptedPassword: z.string().optional(),
+  isSuspended: z.boolean().optional(),
 });
 
 const generalAdminResponseSchema = z.object({
