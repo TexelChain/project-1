@@ -102,7 +102,6 @@ export const getAdminHandler = async (
 
   //Fetch admin
   const admin = await findAdminById(decodedAdmin._id);
-  console.log('The admin', admin);
   if (!admin)
     return sendResponse(
       reply,
