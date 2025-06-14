@@ -16,7 +16,11 @@ export const createAdmin = async (input: newAdmin) => {
 
 //Find admin by Id
 export const findAdminById = async (id: string) => {
-  return await AdminModel.findById(id);
+  const admin = await AdminModel.findById(id);
+  if (!admin) throw new Error('Admin not found');
+
+  //Return admin with decrypted values
+  return { ...admin, encryptedPassword: decrypt(admin.encryptedPassword) };
 };
 
 //Find admin by Email
