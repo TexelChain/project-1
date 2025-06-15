@@ -40,6 +40,7 @@ export const getLoginDetails = async (request: FastifyRequest) => {
     country: 'Unknown',
   };
 
+  let timezone = 'UTC';
   try {
     const res = await fetch(`https://ipapi.co/${ip}/json/`);
     const data = (await res.json()) as IPInfo;
@@ -50,16 +51,23 @@ export const getLoginDetails = async (request: FastifyRequest) => {
         region: data.region || 'Unknown',
         country: data.country_name || 'Unknown',
       };
+      timezone = data.timezone || 'UTC';
     }
   } catch (err) {
     request.log.error('Error fetching IP details:', err);
   }
 
+  const date = new Intl.DateTimeFormat('en-US', {
+    timeZone: timezone,
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(new Date());
+
   return {
     ip,
     userAgent,
     location: locationInfo,
-    date: new Date().toLocaleString(),
+    date,
   };
 };
 
