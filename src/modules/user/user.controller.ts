@@ -28,6 +28,8 @@ import {
 import { FILE_SIZE, SMTP_FROM_EMAIL } from '../../config';
 import welcome from '../../emails/welcome';
 import verificationEmail from '../../emails/verificationEmail';
+import suspensionEmail from '../../emails/suspension';
+import unsuspensionEmail from '../../emails/unsuspended';
 
 //Utils
 import { sendResponse } from '../../utils/response.utils';
@@ -503,7 +505,6 @@ export const editUserHandler = async (
 ) => {
   const decodedAdmin = request.admin!;
 
-  //Fetch admin and make sure he is a super admin
   const admin = await findAdminById(decodedAdmin?._id);
   if (!admin)
     return sendResponse(
@@ -512,6 +513,7 @@ export const editUserHandler = async (
       false,
       'Sorry, but you are not authorized to perform this action'
     );
+
   if (admin.role !== 'super_admin')
     return sendResponse(
       reply,
@@ -529,9 +531,32 @@ export const editUserHandler = async (
       'The specified user account does not exist.'
     );
 
+  const wasSuspended = user.isSuspended;
+  const isSuspended = request.body.isSuspended;
+
   const updatedUser = await updateUser(request.body);
 
-  //Return
+  if (!updatedUser)
+    return sendResponse(
+      reply,
+      400,
+      false,
+      "Couldn't update user profile, kindly try again later"
+    );
+
+  if (typeof isSuspended === 'boolean' && wasSuspended !== isSuspended) {
+    const template = isSuspended
+      ? suspensionEmail({ name: updatedUser.userName }).html
+      : unsuspensionEmail({ name: updatedUser.userName }).html;
+
+    await sendEmail({
+      from: SMTP_FROM_EMAIL,
+      to: user.email,
+      subject: isSuspended ? 'Account Suspended' : 'Account Unsuspended',
+      html: template,
+    });
+  }
+
   return sendResponse(
     reply,
     200,
