@@ -2,7 +2,8 @@ import { FastifyCorsOptions } from '@fastify/cors';
 
 export const allowedOrigins = [
   'http://localhost:5173',
-  'https://animated-gecko.netlify.app',
+  'https://texelchain.netlify.app',
+  'https://texelchain.org',
 ];
 
 export const corsOptions: FastifyCorsOptions = {
