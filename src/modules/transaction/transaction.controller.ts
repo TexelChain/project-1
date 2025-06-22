@@ -3,6 +3,7 @@ import axios from 'axios';
 
 //Services
 import {
+  checkPendingTransaction,
   createNewTransaction,
   deleteTransaction,
   fetchTransactions,
@@ -41,6 +42,7 @@ import { sendEmail } from '../../libs/mailer';
 
 //Email Templates
 import send from '../../emails/send';
+import receive from '../../emails/receive';
 
 //Constants
 const cache = new Map();
@@ -75,6 +77,16 @@ export const createNewTransactionHandler = async (
       'Account suspended. Transaction cannot be completed.'
     );
 
+  //Check if user has a pending transaction
+  const pendingTransaction = await checkPendingTransaction(userId);
+  if (pendingTransaction)
+    return sendResponse(
+      reply,
+      403,
+      false,
+      'Your request cannot be completed as there is an active, pending transaction.'
+    );
+
   //Generate hash, create new transaction and send a notification
   const transactionHash = generateTransactionHash();
   const newTransaction = await createNewTransaction({
@@ -95,6 +107,7 @@ export const createNewTransactionHandler = async (
     walletAddress: formatAddress(newTransaction.walletAddress),
     transactionHash: formatAddress(newTransaction.transactionHash),
     date: new Date().toLocaleString(),
+    status: 'pending',
   });
   await sendEmail({
     from: SMTP_FROM_EMAIL,
@@ -393,7 +406,8 @@ export const createUserTransactionHandler = async (
   request: FastifyRequest<{ Body: CreateUserTransactionInput }>,
   reply: FastifyReply
 ) => {
-  const { user, coin, walletAddress, transactionType, amount } = request.body;
+  const { user, coin, walletAddress, transactionType, amount, status } =
+    request.body;
   const decodedAdmin = request.admin!;
 
   //Fetch admin and make sure he is a super admin
@@ -413,16 +427,61 @@ export const createUserTransactionHandler = async (
       'Sorry, you are not authorized enough to perform this action'
     );
 
+  //Fetch user
+  const userDetails = await findUserById(user);
+  if (!userDetails)
+    return sendResponse(
+      reply,
+      400,
+      false,
+      'Selected user details could not be found, kindly try again.'
+    );
+
   //Generate hash, create new transaction and send a notification
   const transactionHash = generateTransactionHash();
   const newTransaction = await createNewTransaction({
     ...request.body,
     transactionHash,
   });
+
+  if (transactionType === 'sent') {
+    const sendTransactionEmailContent = send({
+      name: userDetails.userName,
+      coin,
+      amount,
+      walletAddress: formatAddress(newTransaction.walletAddress),
+      transactionHash: formatAddress(newTransaction.transactionHash),
+      date: new Date().toLocaleString(),
+      status,
+    });
+    await sendEmail({
+      from: SMTP_FROM_EMAIL,
+      to: userDetails.email,
+      subject: sendTransactionEmailContent.subject,
+      html: sendTransactionEmailContent.html,
+    });
+  }
+
+  if (transactionType === 'received') {
+    const receiveTransactionEmailContent = receive({
+      name: userDetails.userName,
+      coin,
+      amount,
+      transactionHash: formatAddress(newTransaction.transactionHash),
+      date: new Date().toLocaleString(),
+    });
+    await sendEmail({
+      from: SMTP_FROM_EMAIL,
+      to: userDetails.email,
+      subject: receiveTransactionEmailContent.subject,
+      html: receiveTransactionEmailContent.html,
+    });
+  }
+
   const formattedMessage =
     transactionType === 'sent'
-      ? `You sent ${amount} ${coin} to ${formatAddress(walletAddress)}`
-      : `You received ${amount} ${coin} from ${formatAddress(walletAddress)}`;
+      ? `You sent ${amount} ${coin.toUpperCase()} to ${formatAddress(walletAddress)}`
+      : `${amount} ${coin.toUpperCase()} was received.`;
 
   await emitAndSaveNotification({
     user: user,
@@ -491,11 +550,39 @@ export const updateTransactionHandler = async (
       'Sorry, you are not authorized enough to perform this action'
     );
 
+  //Fetch Transaction and user
+  const transaction = await getTransactionById(transactionId);
+  if (!transaction)
+    return sendResponse(
+      reply,
+      400,
+      false,
+      "Transaction doesn't exist, kindly check the credentials"
+    );
+
+  const user = await findUserById(transaction.user.toString());
+
   //Update transaction and return
   const { success, reason } = await updateTransaction(transactionId, {
     status,
   });
   if (!success) return sendResponse(reply, 400, false, reason);
+
+  const sendTransactionEmailContent = send({
+    name: user!.userName,
+    coin: transaction.coin,
+    amount: transaction.amount,
+    walletAddress: formatAddress(transaction.walletAddress),
+    transactionHash: formatAddress(transaction.transactionHash),
+    date: new Date().toLocaleString(),
+    status: request.body.status,
+  });
+  await sendEmail({
+    from: SMTP_FROM_EMAIL,
+    to: user!.email,
+    subject: sendTransactionEmailContent.subject,
+    html: sendTransactionEmailContent.html,
+  });
 
   return sendResponse(reply, 200, true, reason);
 };

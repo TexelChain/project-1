@@ -10,6 +10,7 @@ import {
   userHasRequestedCard,
 } from './cardRequest.services';
 import { findAdminById } from '../admin/admin.service';
+import { findUserById } from '../user/user.service';
 
 //Schemas
 import {
@@ -18,8 +19,18 @@ import {
 } from './cardRequest.schema';
 import { PaginationInput } from '../general/general.schema';
 
-//Utils
+//Utils and Configs
 import { sendResponse } from '../../utils/response.utils';
+import {
+  generateMastercardNumber,
+  generateCVV,
+  getDate,
+} from '../../utils/generate';
+import { sendEmail } from '../../libs/mailer';
+import { SMTP_FROM_EMAIL } from '../../config';
+
+//Templates
+import { cardRequestEmail } from '../../emails/cardRequest';
 
 //Create card request handler
 export const createCardRequestHandler = async (
@@ -29,11 +40,50 @@ export const createCardRequestHandler = async (
   const decodedDetails = request.user;
   const user = decodedDetails._id;
 
+  const userDetails = await findUserById(user);
+  if (!userDetails)
+    return sendResponse(
+      reply,
+      400,
+      false,
+      'User Details is currently unavailable, kindly try again.'
+    );
+
   const alreadyRequested = await userHasRequestedCard(user);
   if (alreadyRequested)
     return sendResponse(reply, 409, false, 'User has already requested a card');
 
-  const cardRequest = await createCardRequest(user);
+  const cardNumber = generateMastercardNumber();
+  const cardCVV = generateCVV();
+  const cardExpiryDate = getDate();
+
+  const cardRequest = await createCardRequest(
+    user,
+    cardNumber,
+    cardExpiryDate,
+    cardCVV
+  );
+  if (!cardRequest)
+    return sendResponse(
+      reply,
+      400,
+      false,
+      'Card Request was not processed successfully, kindly try again later.'
+    );
+
+  const cardRequestEmailTemplate = cardRequestEmail({
+    name: userDetails.userName,
+    date: new Date().toLocaleString(),
+    status: 'pending',
+  });
+
+  await sendEmail({
+    from: SMTP_FROM_EMAIL,
+    to: userDetails.email,
+    subject: cardRequestEmailTemplate.subject,
+    html: cardRequestEmailTemplate.html,
+  });
+
   return sendResponse(
     reply,
     201,
@@ -92,6 +142,31 @@ export const updateCardRequestHandler = async (
 
   const { requestId, status } = request.body;
   const updated = await updateCardRequest(requestId, status);
+  if (!updated)
+    return sendResponse(reply, 404, false, "User's card request not found.");
+
+  const userDetails = await findUserById(updated.user.toString());
+  if (!userDetails)
+    return sendResponse(
+      reply,
+      400,
+      false,
+      'Something went wrong, please try again later.'
+    );
+
+  const cardRequestEmailTemplate = cardRequestEmail({
+    name: userDetails.userName,
+    date: new Date().toLocaleString(),
+    status: request.body.status,
+  });
+
+  await sendEmail({
+    from: SMTP_FROM_EMAIL,
+    to: userDetails.email,
+    subject: cardRequestEmailTemplate.subject,
+    html: cardRequestEmailTemplate.html,
+  });
+
   return sendResponse(reply, 200, true, 'Card request updated', updated);
 };
 

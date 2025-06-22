@@ -30,6 +30,7 @@ import welcome from '../../emails/welcome';
 import verificationEmail from '../../emails/verificationEmail';
 import suspensionEmail from '../../emails/suspension';
 import unsuspensionEmail from '../../emails/unsuspended';
+import kyc from '../../emails/kyc';
 
 //Utils
 import { sendResponse } from '../../utils/response.utils';
@@ -557,6 +558,21 @@ export const editUserHandler = async (
     });
   }
 
+  const isKyc = request.body.kyc;
+  if (isKyc) {
+    const template = kyc({
+      name: updatedUser.userName,
+      status: request.body.kyc?.status as 'accepted' | 'rejected',
+    });
+
+    await sendEmail({
+      from: SMTP_FROM_EMAIL,
+      to: user.email,
+      subject: template.subject,
+      html: template.html,
+    });
+  }
+
   return sendResponse(
     reply,
     200,
@@ -609,6 +625,7 @@ export const fetchUserHandler = async (
   );
 };
 
+//Fetch all users
 export const fetchAllUsersHandler = async (
   request: FastifyRequest<{ Querystring: PaginationInput }>,
   reply: FastifyReply

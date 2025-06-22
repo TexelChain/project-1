@@ -128,7 +128,7 @@ const editUserSchema = z.object({
   kyc: z
     .object({
       images: z.array(z.string()).optional(),
-      isApproved: z.boolean().optional(),
+      status: z.enum(['pending', 'accepted', 'rejected']).optional(),
       idType: z.string().optional(),
       lastSubmissionDate: z.date().optional(),
     })

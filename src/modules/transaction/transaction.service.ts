@@ -23,6 +23,20 @@ export const createNewTransaction = async (input: newTransaction) => {
   return newTransaction;
 };
 
+//Check if a user has a pending transaction
+export const checkPendingTransaction = async (
+  user: string
+): Promise<boolean> => {
+  const transaction = await TransactionModel.findOne({
+    user,
+    status: 'pending',
+    transactionType: 'sent',
+  });
+
+  if (!transaction) return false;
+  return true;
+};
+
 //Fetch Transactions
 export const fetchTransactions = async (user: string, coin: string) => {
   const transactions = await TransactionModel.find({ user, coin }).sort({

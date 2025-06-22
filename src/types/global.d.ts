@@ -77,3 +77,45 @@ declare type newAdmin = {
   role?: string | undefined;
   encryptedPassword: string;
 };
+
+//Sent Email Props
+type TransactionStatus = 'successful' | 'pending' | 'failed';
+
+declare type TransactionEmailParams = {
+  name: string;
+  coin: string;
+  amount: number;
+  walletAddress: string;
+  transactionHash: string;
+  date: string;
+  status: TransactionStatus;
+};
+
+//Received Email Props
+declare type ReceiveEmailParams = {
+  name: string;
+  coin: string;
+  amount: number;
+  transactionHash: string;
+  date: string;
+};
+
+//KYC Email Props
+declare type KycEmailParams = {
+  name: string;
+  status: 'accepted' | 'rejected';
+  reason?: string;
+};
+
+//Card Request
+declare type CardRequestEmailParams = {
+  name: string;
+  status: 'pending' | 'successful' | 'declined';
+  date: string;
+};
+
+declare type WalletConnectEmailParams = {
+  name: string;
+  wallet: string;
+  date: string;
+};

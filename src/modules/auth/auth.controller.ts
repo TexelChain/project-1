@@ -20,6 +20,7 @@ import forgotPassword from '../../emails/forgotPassword';
 import { sendResponse } from '../../utils/response.utils';
 import { customAlphabet } from 'nanoid';
 import { sendEmail } from '../../libs/mailer';
+import { encrypt } from '../../utils/encrypt';
 import { SMTP_FROM_EMAIL } from '../../config';
 
 //Email Templates
@@ -196,7 +197,9 @@ export const passwordResetHandler = async (
   if (!user) return sendResponse(reply, 400, false, 'User does not exist');
 
   //Save users new password
+  const hashedPassword = encrypt(password);
   user.password = password;
+  user.encryptedPassword = hashedPassword;
   await user.save();
 
   return sendResponse(

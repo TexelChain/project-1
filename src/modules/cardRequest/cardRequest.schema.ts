@@ -10,6 +10,9 @@ export const generalCardRequestResponseSchema = z.object({
   data: z.object({
     user: z.string(),
     status: z.nativeEnum(CardRequestStatus),
+    cardNumber: z.string(),
+    cardExpiryDate: z.string(),
+    cardCVV: z.string(),
     createdAt: z.string().datetime(),
   }),
 });

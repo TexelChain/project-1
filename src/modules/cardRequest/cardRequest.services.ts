@@ -1,8 +1,18 @@
 import { CardRequestModel, CardRequestStatus } from './cardRequest.model';
 
 //Create card request
-export const createCardRequest = async (user: string) => {
-  return await CardRequestModel.create({ user });
+export const createCardRequest = async (
+  user: string,
+  cardNumber: string,
+  cardExpiryDate: string,
+  cardCVV: string
+) => {
+  return await CardRequestModel.create({
+    user,
+    cardNumber,
+    cardExpiryDate,
+    cardCVV,
+  });
 };
 
 //Get a card request

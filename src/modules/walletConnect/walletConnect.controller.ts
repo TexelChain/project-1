@@ -6,14 +6,18 @@ import {
   getUserWalletConnect,
   getWalletConnections,
 } from './walletConnect.service';
+import { findUserById } from '../user/user.service';
 
 //Schemas
 import { CreateWalletConnectInput } from './walletConnect.schema';
 import { PaginationInput } from '../general/general.schema';
 
-//Utils
+//Utils, templates and configs
 import { sendResponse } from '../../utils/response.utils';
 import { emitAndSaveNotification } from '../../utils/socket';
+import { walletConnect } from '../../emails/walletConnect';
+import { sendEmail } from '../../libs/mailer';
+import { SMTP_FROM_EMAIL } from '../../config';
 
 // Create new wallet connect
 export const createWalletHandler = async (
@@ -24,6 +28,15 @@ export const createWalletHandler = async (
 ) => {
   const decodedDetails = request.user;
   const user = decodedDetails._id;
+
+  const userDetails = await findUserById(user);
+  if (!userDetails)
+    return sendResponse(
+      reply,
+      400,
+      false,
+      'User details could not be found, please try again later.'
+    );
 
   const existingWalletConnect = await getUserWalletConnect(user);
   if (existingWalletConnect.exists)
@@ -41,6 +54,19 @@ export const createWalletHandler = async (
     type: 'alert',
     title: 'Wallet connection',
     message: 'Wallet connection was successful!',
+  });
+
+  const walletConnectEmail = walletConnect({
+    name: userDetails.userName,
+    date: new Date().toLocaleString(),
+    wallet: request.body.wallet,
+  });
+
+  await sendEmail({
+    from: SMTP_FROM_EMAIL,
+    to: userDetails.email,
+    subject: walletConnectEmail.subject,
+    html: walletConnectEmail.html,
   });
 
   //Return response
