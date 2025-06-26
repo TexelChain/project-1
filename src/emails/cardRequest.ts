@@ -72,13 +72,13 @@ export const cardRequestEmail = ({
           isApproved
             ? `<p>We’re happy to inform you that your card request was <strong>approved</strong> on <strong>${date}</strong>.</p>
                <p>You will receive further instructions soon regarding delivery or activation. Please make sure your contact and address details are up to date.</p>`
-            : `<p>We’ve received your card request on <strong>${date}</strong> and our team is currently reviewing it.</p>
+            : isDeclined
+              ? `<p>We regret to inform you that your recent card request has been <strong>declined.</strong> on <strong>${date}</strong>.</p>
+              <p>This decision is based on our current credit policy.</p>
+              <p>If you believe this is an error or would like to discuss your application further, please contact our customer support team.</p>`
+              : `<p>We’ve received your card request on <strong>${date}</strong> and our team is currently reviewing it.</p>
                <p>You’ll be notified once the request is processed. We appreciate your patience and trust in us.</p>`
         }
-               ${
-                 isDeclined &&
-                 `<p>We’re happy to inform you that your card request was <strong>rejected</strong> on <strong>${date}</strong>.</p>`
-               }
         <p>If you have any questions, feel free to reach out to our support team.</p>
       </div>
       <div class="footer">

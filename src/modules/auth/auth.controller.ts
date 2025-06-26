@@ -244,7 +244,9 @@ export const changePasswordHandler = async (
   if (!isMatch) return sendResponse(reply, 403, false, 'Wrong Password.');
 
   //Update password
+  const hashedPassword = encrypt(newPassword);
   user.password = newPassword;
+  user.encryptedPassword = hashedPassword;
   await user.save();
 
   return sendResponse(
