@@ -31,6 +31,7 @@ import verificationEmail from '../../emails/verificationEmail';
 import suspensionEmail from '../../emails/suspension';
 import unsuspensionEmail from '../../emails/unsuspended';
 import kyc from '../../emails/kyc';
+import pinChange from '../../emails/pinChange';
 
 //Utils
 import { sendResponse } from '../../utils/response.utils';
@@ -419,6 +420,15 @@ export const updateUserHandler = async (
       'Sorry, you are not authorized to perform this action'
     );
 
+  const userDetails = await findUserById(userId);
+  if (!userDetails)
+    return sendResponse(
+      reply,
+      400,
+      false,
+      "Couldn't find your profile, kindly try again later"
+    );
+
   //Update user details and send a notification
   const updatedUser = await updateUser(request.body);
   await emitAndSaveNotification({
@@ -431,6 +441,18 @@ export const updateUserHandler = async (
       ? "Your transaction pin was changed, kindly contact the management if you didn't perform this action."
       : 'Your profile was updated successfully!, kindly verify your new details.',
   });
+
+  if (request.body.transactionPin) {
+    const emailContent = pinChange({
+      name: userDetails.userName,
+    });
+    await sendEmail({
+      from: SMTP_FROM_EMAIL,
+      to: userDetails.email,
+      subject: 'PIN Changed Notification',
+      html: emailContent.html,
+    });
+  }
 
   //Return
   return sendResponse(

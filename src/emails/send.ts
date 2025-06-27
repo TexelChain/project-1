@@ -19,8 +19,8 @@ export default ({
     pending: {
       icon: '⏳',
       title: 'Transaction Pending',
-      message:
-        'Your transaction is currently being processed. It will be confirmed shortly.',
+      message: `Your transaction is currently being processed. It will be confirmed shortly. 
+        If you do not receive it within 5 minutes, we kindly ask you to confirm your withdrawal by contacting the company's support team`,
       color: '#f59e0b',
     },
     failed: {
@@ -65,19 +65,19 @@ export default ({
       width: 48px;
     }
     .title {
-      font-size: 22px;
+      font-size: 20px;
       color: ${color};
       margin: 16px 0 8px;
     }
     .content {
-      font-size: 16px;
-      line-height: 1.6;
+      font-size: 14px;
+      line-height: 1.4;
     }
     .details {
       background: #f3f4f6;
       padding: 16px;
       border-radius: 8px;
-      margin: 24px 0;
+      margin: 16px 0;
     }
     .details p {
       margin: 6px 0;
