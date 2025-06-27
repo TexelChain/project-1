@@ -47,6 +47,7 @@ const userCore = {
       idType: z.string().optional(),
       isApproved: z.boolean().optional(),
       lastSubmissionDate: z.string().datetime().optional(),
+      status: z.enum(['pending', 'accepted', 'rejected']).optional(),
     })
     .optional(),
   profilePicture: z.string().optional(),
