@@ -371,7 +371,7 @@ export const updateProfilePictureHandler = async (
       }
 
       const ext = path.extname(part.filename || '');
-      const filename = `kyc/${randomUUID()}${ext}`;
+      const filename = `profile/${randomUUID()}${ext}`;
       const imageUrl = await uploadFileToS3(filename, buffer, part.mimetype);
       imageUrls.push(imageUrl);
     }

@@ -114,6 +114,16 @@ export const getCardRequestsHandler = async (
 ) => {
   const { page = '1', limit = '10' } = request.query;
 
+  const decodedAdmin = request.admin!;
+  const admin = await findAdminById(decodedAdmin?._id);
+  if (!admin)
+    return sendResponse(
+      reply,
+      401,
+      false,
+      'Sorry, but you are not authorized to perform this action'
+    );
+
   const result = await getCardRequests(parseInt(page), parseInt(limit));
   return sendResponse(reply, 200, true, 'Card requests fetched', result);
 };
