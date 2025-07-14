@@ -19,6 +19,12 @@ const walletCoreWithMeta = walletConnectCore.extend({
   createdAt: z.string().datetime(),
 });
 
+const deleteWalletConnectSchema = z.object({
+  connectId: z.string({
+    required_error: 'Connection ID is required',
+  }),
+});
+
 const walletCoreResponseSchema = z.object({
   ...responseCore,
   data: walletCoreWithMeta,
@@ -32,11 +38,15 @@ const fetchWalletConnectResponseSchema = z.object({
 export type CreateWalletConnectInput = z.infer<
   typeof createWalletConnectSchema
 >;
+export type DeleteWalletConnectInput = z.infer<
+  typeof deleteWalletConnectSchema
+>;
 
 export const { schemas: walletConnectSchemas, $ref: walletConnectRef } =
   buildJsonSchemas(
     {
       createWalletConnectSchema,
+      deleteWalletConnectSchema,
       walletCoreResponseSchema,
       fetchWalletConnectResponseSchema,
     },

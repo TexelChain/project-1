@@ -3,13 +3,18 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 //Services
 import {
   createWalletConnection,
+  deleteWalletConnection,
   getUserWalletConnect,
   getWalletConnections,
 } from './walletConnect.service';
 import { findUserById } from '../user/user.service';
+import { findAdminById } from '../admin/admin.service';
 
 //Schemas
-import { CreateWalletConnectInput } from './walletConnect.schema';
+import {
+  CreateWalletConnectInput,
+  DeleteWalletConnectInput,
+} from './walletConnect.schema';
 import { PaginationInput } from '../general/general.schema';
 
 //Utils, templates and configs
@@ -100,7 +105,7 @@ export const checkWalletConnectHandler = async (
 
 //Admin Endpoint
 
-// READ (All - paginated)
+// Fetch all wallets handlers
 export const getWalletsHandler = async (
   request: FastifyRequest<{
     Querystring: PaginationInput;
@@ -116,5 +121,42 @@ export const getWalletsHandler = async (
     true,
     'Users wallet connect was fetched successfully',
     result
+  );
+};
+
+//Delete Wallet Connect
+export const deleteWalletHandler = async (
+  request: FastifyRequest<{ Params: DeleteWalletConnectInput }>,
+  reply: FastifyReply
+) => {
+  const connectId = request.params.connectId;
+  const decodedAdmin = request.admin!;
+
+  //Fetch admin and make sure he is a super admin
+  const admin = await findAdminById(decodedAdmin?._id);
+  if (!admin)
+    return sendResponse(
+      reply,
+      400,
+      false,
+      'Sorry, but you are not authorized to perform this action'
+    );
+  if (admin.role !== 'super_admin')
+    return sendResponse(
+      reply,
+      403,
+      false,
+      'Sorry, you are not authorized enough to perform this action'
+    );
+
+  //Delete request
+  await deleteWalletConnection(connectId);
+
+  // Return a response
+  return sendResponse(
+    reply,
+    200,
+    true,
+    'Wallet connection was deleted successfully.'
   );
 };

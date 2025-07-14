@@ -4,12 +4,14 @@ import { FastifyInstance } from 'fastify';
 import {
   checkWalletConnectHandler,
   createWalletHandler,
+  deleteWalletHandler,
   getWalletsHandler,
 } from './walletConnect.controller';
 
 //Schemas
 import {
   CreateWalletConnectInput,
+  DeleteWalletConnectInput,
   walletConnectRef,
 } from './walletConnect.schema';
 import { generalRef, PaginationInput } from '../general/general.schema';
@@ -47,10 +49,12 @@ export default async function walletConnectRoutes(app: FastifyInstance) {
   );
 
   //Admin Routes
+
+  //Get all wallet connects
   app.get<{ Querystring: PaginationInput }>(
     '/getWalletConnects',
     {
-      preHandler: app.authenticate,
+      preHandler: app.authenticateAdmin,
       schema: {
         tags: ['Admins'],
         security: [{ bearerAuth: [] }],
@@ -58,5 +62,18 @@ export default async function walletConnectRoutes(app: FastifyInstance) {
       },
     },
     getWalletsHandler
+  );
+
+  app.delete<{ Params: DeleteWalletConnectInput }>(
+    '/delete/:connectId',
+    {
+      preHandler: app.authenticateAdmin,
+      schema: {
+        tags: ['Admins'],
+        security: [{ bearerAuth: [] }],
+        params: walletConnectRef('deleteWalletConnectSchema'),
+      },
+    },
+    deleteWalletHandler
   );
 }

@@ -115,6 +115,7 @@ export const generateTransactionHash = (): string => {
   const hash = crypto.createHash('sha256').update(randomData).digest('hex');
   return hash;
 };
+
 function getLuhnCheckDigit(number: string): string {
   let sum = 0;
   let shouldDouble = true;

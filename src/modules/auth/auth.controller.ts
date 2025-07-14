@@ -107,7 +107,7 @@ export const loginHandler = async (
 
     const redirect = !user.isVerified
       ? 'verification'
-      : !user.kyc || user.kyc.status === 'rejected'
+      : !user.kyc.lastSubmissionDate || user.kyc.status === 'rejected'
         ? 'kyc'
         : 'user/dashboard';
 

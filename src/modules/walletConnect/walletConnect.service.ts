@@ -39,3 +39,8 @@ export const getWalletConnections = async (page = 1, limit = 10) => {
     },
   };
 };
+
+//Delete a wallet connect
+export const deleteWalletConnection = async (id: string) => {
+  return WalletConnectModel.findByIdAndDelete(id);
+};

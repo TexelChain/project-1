@@ -292,7 +292,12 @@ export const kycUploadHandler = async (
   const updatedUser = await updateUser({
     email: decodedDetails.email,
     gender,
-    kyc: { images: imageUrls, idType, lastSubmissionDate: new Date() },
+    kyc: {
+      images: imageUrls,
+      idType,
+      lastSubmissionDate: new Date(),
+      status: 'pending',
+    },
   });
 
   if (!updatedUser)
