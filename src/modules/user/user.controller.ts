@@ -241,6 +241,30 @@ export const kycUploadHandler = async (
   const decodedDetails = request.user;
   const parts = request.parts();
 
+  const userDetails = await findUserById(decodedDetails._id);
+  if (!userDetails)
+    return sendResponse(
+      reply,
+      400,
+      false,
+      "Couldn't find your profile, kindly try again later"
+    );
+
+  //Delete Previous KYC Image
+  if (userDetails.kyc?.images && userDetails.kyc.images.length > 0) {
+    for (const imageUrl of userDetails.kyc.images) {
+      const deleted = await deleteFileFromS3(imageUrl);
+      if (!deleted) {
+        return sendResponse(
+          reply,
+          500,
+          false,
+          'Something went wrong while deleting old KYC images. Please try again later.'
+        );
+      }
+    }
+  }
+
   const imageUrls: string[] = [];
   let gender: 'male' | 'female' | 'prefer not to say' | undefined;
   let idType: string | undefined;

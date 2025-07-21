@@ -21,8 +21,7 @@ export type UserDocument = Document & {
   address: string;
   passPhrase: string[];
   kyc: {
-    frontImage: string;
-    backImage: string;
+    images: string[];
     idType: string;
     status: 'pending' | 'accepted' | 'rejected';
     lastSubmissionDate: Date;
