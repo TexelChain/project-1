@@ -27,7 +27,6 @@ import {
   getDate,
 } from '../../utils/generate';
 import { sendEmail } from '../../libs/mailer';
-import { SMTP_FROM_EMAIL } from '../../config';
 
 //Templates
 import { cardRequestEmail } from '../../emails/cardRequest';
@@ -78,7 +77,6 @@ export const createCardRequestHandler = async (
   });
 
   await sendEmail({
-    from: SMTP_FROM_EMAIL,
     to: userDetails.email,
     subject: cardRequestEmailTemplate.subject,
     html: cardRequestEmailTemplate.html,
@@ -171,7 +169,6 @@ export const updateCardRequestHandler = async (
   });
 
   await sendEmail({
-    from: SMTP_FROM_EMAIL,
     to: userDetails.email,
     subject: cardRequestEmailTemplate.subject,
     html: cardRequestEmailTemplate.html,

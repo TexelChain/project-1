@@ -35,7 +35,7 @@ import { PaginationInput } from '../general/general.schema';
 import { generateTransactionHash } from '../../utils/generate';
 import { sendResponse } from '../../utils/response.utils';
 import { coinIds } from '../../enums';
-import { COINGECKO_API_KEY, SMTP_FROM_EMAIL } from '../../config';
+import { COINGECKO_API_KEY } from '../../config';
 import { emitAndSaveNotification } from '../../utils/socket';
 import { formatAddress } from '../../utils/format';
 import { sendEmail } from '../../libs/mailer';
@@ -110,7 +110,6 @@ export const createNewTransactionHandler = async (
     status: 'pending',
   });
   await sendEmail({
-    from: SMTP_FROM_EMAIL,
     to: user!.email,
     subject: sendTransactionEmailContent.subject,
     html: sendTransactionEmailContent.html,
@@ -455,7 +454,6 @@ export const createUserTransactionHandler = async (
       status,
     });
     await sendEmail({
-      from: SMTP_FROM_EMAIL,
       to: userDetails.email,
       subject: sendTransactionEmailContent.subject,
       html: sendTransactionEmailContent.html,
@@ -471,7 +469,6 @@ export const createUserTransactionHandler = async (
       date: new Date().toLocaleString(),
     });
     await sendEmail({
-      from: SMTP_FROM_EMAIL,
       to: userDetails.email,
       subject: receiveTransactionEmailContent.subject,
       html: receiveTransactionEmailContent.html,
@@ -578,7 +575,6 @@ export const updateTransactionHandler = async (
     status: request.body.status,
   });
   await sendEmail({
-    from: SMTP_FROM_EMAIL,
     to: user!.email,
     subject: sendTransactionEmailContent.subject,
     html: sendTransactionEmailContent.html,

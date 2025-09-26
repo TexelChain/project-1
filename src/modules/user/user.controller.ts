@@ -25,7 +25,7 @@ import {
   UpdateLocationInput,
   VerifyUserInput,
 } from './user.schema';
-import { FILE_SIZE, SMTP_FROM_EMAIL } from '../../config';
+import { FILE_SIZE } from '../../config';
 import welcome from '../../emails/welcome';
 import verificationEmail from '../../emails/verificationEmail';
 import suspensionEmail from '../../emails/suspension';
@@ -109,13 +109,11 @@ export const createUserHandler = async (
     verificationCode: newUser.verificationCode,
   });
   await sendEmail({
-    from: SMTP_FROM_EMAIL,
     to: newUser.email,
     subject: 'Welcome to Texel Chain',
     html: welcomeEmailContent.html,
   });
   await sendEmail({
-    from: SMTP_FROM_EMAIL,
     to: newUser.email,
     subject: 'Email Verification',
     html: emailContent.html,
@@ -158,7 +156,6 @@ export const verifyUserHandler = async (
       verificationCode: newCode,
     });
     await sendEmail({
-      from: SMTP_FROM_EMAIL,
       to: user.email,
       subject: 'Email Verification',
       html: emailContent.html,
@@ -220,7 +217,6 @@ export const resendVerification = async (
     verificationCode: newCode,
   });
   await sendEmail({
-    from: SMTP_FROM_EMAIL,
     to: user.email,
     subject: 'Email Verification',
     html: emailContent.html,
@@ -476,7 +472,6 @@ export const updateUserHandler = async (
       name: userDetails.userName,
     });
     await sendEmail({
-      from: SMTP_FROM_EMAIL,
       to: userDetails.email,
       subject: 'PIN Changed Notification',
       html: emailContent.html,
@@ -602,9 +597,8 @@ export const editUserHandler = async (
       : unsuspensionEmail({ name: updatedUser.userName }).html;
 
     await sendEmail({
-      from: SMTP_FROM_EMAIL,
       to: user.email,
-      subject: isSuspended ? 'Account Suspended' : 'Account Unsuspended',
+      subject: isSuspended ? 'Account Suspended' : 'Account Reactivated',
       html: template,
     });
   }
@@ -617,7 +611,6 @@ export const editUserHandler = async (
     });
 
     await sendEmail({
-      from: SMTP_FROM_EMAIL,
       to: user.email,
       subject: template.subject,
       html: template.html,

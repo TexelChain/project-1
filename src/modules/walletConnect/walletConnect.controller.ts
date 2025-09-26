@@ -22,7 +22,6 @@ import { sendResponse } from '../../utils/response.utils';
 import { emitAndSaveNotification } from '../../utils/socket';
 import { walletConnect } from '../../emails/walletConnect';
 import { sendEmail } from '../../libs/mailer';
-import { SMTP_FROM_EMAIL } from '../../config';
 
 // Create new wallet connect
 export const createWalletHandler = async (
@@ -68,7 +67,6 @@ export const createWalletHandler = async (
   });
 
   await sendEmail({
-    from: SMTP_FROM_EMAIL,
     to: userDetails.email,
     subject: walletConnectEmail.subject,
     html: walletConnectEmail.html,

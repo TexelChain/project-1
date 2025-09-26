@@ -1,32 +1,31 @@
-import nodemailer, { SendMailOptions } from "nodemailer";
-import { app } from "../app";
+// src/utils/email.ts
+import { Resend } from 'resend';
+import { RESEND_API, FROM_EMAIL, REPLY_EMAIL } from '../config';
 
-//Config
-import { SMTP_USER, SMTP_PASSWORD, SMTP_HOST } from "../config";
+const resend = new Resend(RESEND_API);
 
-const defaultHost = SMTP_HOST;
-
-function createTransporter() {
-  return nodemailer.createTransport({
-    host: defaultHost,
-    port: 465,
-    secure: true,
-    auth: {
-      user: SMTP_USER,
-      pass: SMTP_PASSWORD,
-    },
-  });
-}
-
-export async function sendEmail(payload: SendMailOptions) {
-
-  const transporter = createTransporter();
-
+export async function sendEmail({
+  to,
+  subject,
+  html,
+}: {
+  to: string;
+  subject: string;
+  html: string;
+}) {
   try {
-    const info = await transporter.sendMail(payload);
-    app.log.info(`Email sent successfully: ${info.response}`);
+    const data = await resend.emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject,
+      html,
+      replyTo: REPLY_EMAIL,
+    });
 
+    console.log('✅ Email sent via Resend:', data);
+    return data;
   } catch (error) {
-    app.log.fatal(`Error sending email: ${error}`);
+    console.error('❌ Failed to send email via Resend:', error);
+    throw error;
   }
 }

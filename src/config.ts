@@ -10,10 +10,8 @@ const envSchema = z.object({
   PORT: z.coerce.number().default(3000),
   DATABASE_URL: z.string(),
   DEBUG_MODE: z.string().optional().default('false'),
-  SMTP_USER: z.string(),
-  SMTP_PASSWORD: z.string(),
-  SMTP_HOST: z.string(),
-  SMTP_FROM_EMAIL: z.string(),
+  FROM_EMAIL: z.string(),
+  REPLY_EMAIL: z.string(),
   ENCRYPTION_KEY: z.string(),
   ENCRYPTION_IV: z.string(),
   AWS_BUCKET_NAME: z.string(),
@@ -22,6 +20,7 @@ const envSchema = z.object({
   AWS_SECRET_ACCESS_KEY: z.string(),
   FILE_SIZE: z.number().default(100),
   COINGECKO_API_KEY: z.string(),
+  RESEND_API: z.string(),
 });
 
 // Validate the environment variables
@@ -33,10 +32,8 @@ export const {
   PORT,
   DATABASE_URL,
   DEBUG_MODE,
-  SMTP_USER,
-  SMTP_PASSWORD,
-  SMTP_HOST,
-  SMTP_FROM_EMAIL,
+  FROM_EMAIL,
+  REPLY_EMAIL,
   ENCRYPTION_KEY,
   ENCRYPTION_IV,
   AWS_BUCKET_NAME,
@@ -45,4 +42,5 @@ export const {
   AWS_SECRET_ACCESS_KEY,
   FILE_SIZE,
   COINGECKO_API_KEY,
+  RESEND_API,
 } = parsedEnv;
