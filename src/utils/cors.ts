@@ -2,8 +2,7 @@ import { FastifyCorsOptions } from '@fastify/cors';
 
 export const allowedOrigins = [
   'http://localhost:5173',
-  'https://texelchain.netlify.app',
-  'https://texelchain.org',
+  'https://texelchaincore.org',
 ];
 
 export const corsOptions: FastifyCorsOptions = {
